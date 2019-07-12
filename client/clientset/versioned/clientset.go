@@ -1,5 +1,5 @@
 /*
-Copyright 2019 The KubeDB Authors.
+Copyright 2019 The Kubeform Authors.
 
 Licensed under the Apache License, Version 2.0 (the "License");
 you may not use this file except in compliance with the License.
@@ -23,23 +23,55 @@ import (
 	rest "k8s.io/client-go/rest"
 	flowcontrol "k8s.io/client-go/util/flowcontrol"
 	awsv1alpha1 "kubeform.dev/kubeform/client/clientset/versioned/typed/aws/v1alpha1"
+	azurermv1alpha1 "kubeform.dev/kubeform/client/clientset/versioned/typed/azurerm/v1alpha1"
+	digitaloceanv1alpha1 "kubeform.dev/kubeform/client/clientset/versioned/typed/digitalocean/v1alpha1"
+	googlev1alpha1 "kubeform.dev/kubeform/client/clientset/versioned/typed/google/v1alpha1"
+	linodev1alpha1 "kubeform.dev/kubeform/client/clientset/versioned/typed/linode/v1alpha1"
 )
 
 type Interface interface {
 	Discovery() discovery.DiscoveryInterface
 	AwsV1alpha1() awsv1alpha1.AwsV1alpha1Interface
+	AzurermV1alpha1() azurermv1alpha1.AzurermV1alpha1Interface
+	DigitaloceanV1alpha1() digitaloceanv1alpha1.DigitaloceanV1alpha1Interface
+	GoogleV1alpha1() googlev1alpha1.GoogleV1alpha1Interface
+	LinodeV1alpha1() linodev1alpha1.LinodeV1alpha1Interface
 }
 
 // Clientset contains the clients for groups. Each group has exactly one
 // version included in a Clientset.
 type Clientset struct {
 	*discovery.DiscoveryClient
-	awsV1alpha1 *awsv1alpha1.AwsV1alpha1Client
+	awsV1alpha1          *awsv1alpha1.AwsV1alpha1Client
+	azurermV1alpha1      *azurermv1alpha1.AzurermV1alpha1Client
+	digitaloceanV1alpha1 *digitaloceanv1alpha1.DigitaloceanV1alpha1Client
+	googleV1alpha1       *googlev1alpha1.GoogleV1alpha1Client
+	linodeV1alpha1       *linodev1alpha1.LinodeV1alpha1Client
 }
 
 // AwsV1alpha1 retrieves the AwsV1alpha1Client
 func (c *Clientset) AwsV1alpha1() awsv1alpha1.AwsV1alpha1Interface {
 	return c.awsV1alpha1
+}
+
+// AzurermV1alpha1 retrieves the AzurermV1alpha1Client
+func (c *Clientset) AzurermV1alpha1() azurermv1alpha1.AzurermV1alpha1Interface {
+	return c.azurermV1alpha1
+}
+
+// DigitaloceanV1alpha1 retrieves the DigitaloceanV1alpha1Client
+func (c *Clientset) DigitaloceanV1alpha1() digitaloceanv1alpha1.DigitaloceanV1alpha1Interface {
+	return c.digitaloceanV1alpha1
+}
+
+// GoogleV1alpha1 retrieves the GoogleV1alpha1Client
+func (c *Clientset) GoogleV1alpha1() googlev1alpha1.GoogleV1alpha1Interface {
+	return c.googleV1alpha1
+}
+
+// LinodeV1alpha1 retrieves the LinodeV1alpha1Client
+func (c *Clientset) LinodeV1alpha1() linodev1alpha1.LinodeV1alpha1Interface {
+	return c.linodeV1alpha1
 }
 
 // Discovery retrieves the DiscoveryClient
@@ -62,6 +94,22 @@ func NewForConfig(c *rest.Config) (*Clientset, error) {
 	if err != nil {
 		return nil, err
 	}
+	cs.azurermV1alpha1, err = azurermv1alpha1.NewForConfig(&configShallowCopy)
+	if err != nil {
+		return nil, err
+	}
+	cs.digitaloceanV1alpha1, err = digitaloceanv1alpha1.NewForConfig(&configShallowCopy)
+	if err != nil {
+		return nil, err
+	}
+	cs.googleV1alpha1, err = googlev1alpha1.NewForConfig(&configShallowCopy)
+	if err != nil {
+		return nil, err
+	}
+	cs.linodeV1alpha1, err = linodev1alpha1.NewForConfig(&configShallowCopy)
+	if err != nil {
+		return nil, err
+	}
 
 	cs.DiscoveryClient, err = discovery.NewDiscoveryClientForConfig(&configShallowCopy)
 	if err != nil {
@@ -75,6 +123,10 @@ func NewForConfig(c *rest.Config) (*Clientset, error) {
 func NewForConfigOrDie(c *rest.Config) *Clientset {
 	var cs Clientset
 	cs.awsV1alpha1 = awsv1alpha1.NewForConfigOrDie(c)
+	cs.azurermV1alpha1 = azurermv1alpha1.NewForConfigOrDie(c)
+	cs.digitaloceanV1alpha1 = digitaloceanv1alpha1.NewForConfigOrDie(c)
+	cs.googleV1alpha1 = googlev1alpha1.NewForConfigOrDie(c)
+	cs.linodeV1alpha1 = linodev1alpha1.NewForConfigOrDie(c)
 
 	cs.DiscoveryClient = discovery.NewDiscoveryClientForConfigOrDie(c)
 	return &cs
@@ -84,6 +136,10 @@ func NewForConfigOrDie(c *rest.Config) *Clientset {
 func New(c rest.Interface) *Clientset {
 	var cs Clientset
 	cs.awsV1alpha1 = awsv1alpha1.New(c)
+	cs.azurermV1alpha1 = azurermv1alpha1.New(c)
+	cs.digitaloceanV1alpha1 = digitaloceanv1alpha1.New(c)
+	cs.googleV1alpha1 = googlev1alpha1.New(c)
+	cs.linodeV1alpha1 = linodev1alpha1.New(c)
 
 	cs.DiscoveryClient = discovery.NewDiscoveryClient(c)
 	return &cs
