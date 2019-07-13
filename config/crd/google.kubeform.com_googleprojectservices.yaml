@@ -8,7 +8,7 @@ metadata:
 spec:
   group: google.kubeform.com
   names:
-    kind: GoogleProjectService
+    kind: GoogleProjectServices
     plural: googleprojectservices
   scope: ""
   validation:
@@ -388,12 +388,14 @@ spec:
               type: boolean
             project:
               type: string
-            service:
-              type: string
+            services:
+              items:
+                type: string
+              type: array
           required:
           - project
+          - services
           - disable_on_destroy
-          - service
           type: object
         status:
           properties:

@@ -4,7 +4,6 @@
 // +k8s:conversion-gen=kubeform.dev/kubeform/apis/azurerm
 // +k8s:openapi-gen=true
 // +k8s:defaulter-gen=TypeMeta
-// +kubebuilder:object:generate=true
 
 // +groupName=azurerm.kubeform.com
 package v1alpha1

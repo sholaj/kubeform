@@ -4,7 +4,6 @@
 // +k8s:conversion-gen=kubeform.dev/kubeform/apis/linode
 // +k8s:openapi-gen=true
 // +k8s:defaulter-gen=TypeMeta
-// +kubebuilder:object:generate=true
 
 // +groupName=linode.kubeform.com
 package v1alpha1
