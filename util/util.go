@@ -4,6 +4,7 @@ import (
 	"bytes"
 	"fmt"
 	"io/ioutil"
+	"log"
 	"os"
 	"path/filepath"
 	"regexp"
@@ -12,7 +13,7 @@ import (
 	"strings"
 	"text/template"
 
-	"github.com/appscode/go/log"
+	aclog "github.com/appscode/go/log"
 	. "github.com/dave/jennifer/jen"
 	"github.com/hashicorp/terraform/helper/schema"
 )
@@ -49,8 +50,6 @@ func GenerateProviderAPIS(providerName, version string, schmeas []map[string]*sc
 
 	for i, structName := range structNames {
 		var out string
-
-		TerraformSchemaToStruct(schmeas[i], structName+"Spec", providerName, &out)
 		if val, ok := execeptionList[structName]; ok {
 			structName = val
 			structNames[i] = val
@@ -90,9 +89,16 @@ func TerraformSchemaToStruct(s map[string]*schema.Schema, structName, providerNa
 	for _, key := range keys {
 		value := s[key]
 		id := SnakeCaseToCamelCase(key)
+		ptr := ""
 
 		if value.Computed || value.Removed != "" {
 			continue
+		}
+
+		if value.Optional {
+			statements = append(statements, Comment("// +optional"))
+			key = key + ",omitempty"
+			ptr = "*"
 		}
 
 		if value.MaxItems != 0 {
@@ -108,7 +114,7 @@ func TerraformSchemaToStruct(s map[string]*schema.Schema, structName, providerNa
 		}
 
 		if value.Sensitive {
-			log.Errorf("Resource %s from provider %s is leaking sensitive info in %s.%s", structName, providerName, structName, id)
+			aclog.Errorf("Resource %s from provider %s is leaking sensitive info in %s.%s", structName, providerName, structName, id)
 		}
 
 		if value.Deprecated != "" {
@@ -157,10 +163,10 @@ func TerraformSchemaToStruct(s map[string]*schema.Schema, structName, providerNa
 					statements = append(statements, Id(id).Index().String().Tag(map[string]string{"json": key}))
 				}
 			case *schema.Resource:
-				statements = append(statements, Id(id).Index().Id(structName+id).Tag(map[string]string{"json": key}))
+				statements = append(statements, Id(id).Id(ptr).Index().Id(structName).Tag(map[string]string{"json": key}))
 				TerraformSchemaToStruct(value.Elem.(*schema.Resource).Schema, structName+id, providerName, out)
 			default:
-				statements = append(statements, Id(id).Index().String().Tag(map[string]string{"json": key}))
+				log.Fatalf("Provider %s has resource %s type %s.%s with unknown schema type %s", providerName, structName, structName, id, value.Elem)
 			}
 
 		}
