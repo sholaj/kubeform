@@ -8,9 +8,11 @@ import (
 	"path/filepath"
 	"regexp"
 	"sort"
+	"strconv"
 	"strings"
 	"text/template"
 
+	"github.com/appscode/go/log"
 	. "github.com/dave/jennifer/jen"
 	"github.com/hashicorp/terraform/helper/schema"
 )
@@ -48,12 +50,13 @@ func GenerateProviderAPIS(providerName, version string, schmeas []map[string]*sc
 	for i, structName := range structNames {
 		var out string
 
+		TerraformSchemaToStruct(schmeas[i], structName+"Spec", providerName, &out)
 		if val, ok := execeptionList[structName]; ok {
 			structName = val
 			structNames[i] = val
 		}
 
-		TerraformSchemaToStruct(schmeas[i], structName+"Spec", &out)
+		TerraformSchemaToStruct(schmeas[i], structName+"Spec", providerName, &out)
 		typeData := TypeData{
 			Name: structName,
 			Spec: out,
@@ -75,7 +78,7 @@ func GenerateProviderAPIS(providerName, version string, schmeas []map[string]*sc
 	return nil
 }
 
-func TerraformSchemaToStruct(s map[string]*schema.Schema, structName string, out *string) {
+func TerraformSchemaToStruct(s map[string]*schema.Schema, structName, providerName string, out *string) {
 	var statements Statement
 	var keys []string
 	for k := range s {
@@ -87,6 +90,31 @@ func TerraformSchemaToStruct(s map[string]*schema.Schema, structName string, out
 	for _, key := range keys {
 		value := s[key]
 		id := SnakeCaseToCamelCase(key)
+
+		if value.Computed || value.Removed != "" {
+			continue
+		}
+
+		if value.MaxItems != 0 {
+			statements = append(statements, Comment("// +kubebuilder:validation:MaxItems="+strconv.Itoa(value.MaxItems)))
+		}
+
+		if value.MinItems != 0 {
+			statements = append(statements, Comment("// +kubebuilder:validation:MinItems="+strconv.Itoa(value.MinItems)))
+		}
+
+		if value.Type == schema.TypeSet {
+			statements = append(statements, Comment("// +kubebuilder:validation:UniqueItems=true"))
+		}
+
+		if value.Sensitive {
+			log.Errorf("Resource %s from provider %s is leaking sensitive info in %s.%s", structName, providerName, structName, id)
+		}
+
+		if value.Deprecated != "" {
+			statements = append(statements, Comment("// Deprecated"))
+		}
+
 		switch value.Type {
 		case schema.TypeString:
 			statements = append(statements, Id(id).String().Tag(map[string]string{"json": key}))
@@ -110,8 +138,8 @@ func TerraformSchemaToStruct(s map[string]*schema.Schema, structName string, out
 					statements = append(statements, Id(id).Map(String()).String().Tag(map[string]string{"json": key}))
 				}
 			case *schema.Resource:
-				statements = append(statements, Id(id).Map(String()).String().Tag(map[string]string{"json": key}))
-				TerraformSchemaToStruct(value.Elem.(*schema.Resource).Schema, structName+id, out)
+				statements = append(statements, Id(id).Map(String()).Id(structName+id).Tag(map[string]string{"json": key}))
+				TerraformSchemaToStruct(value.Elem.(*schema.Resource).Schema, structName+id, providerName, out)
 			default:
 				statements = append(statements, Id(id).Map(String()).String().Tag(map[string]string{"json": key}))
 			}
@@ -129,8 +157,8 @@ func TerraformSchemaToStruct(s map[string]*schema.Schema, structName string, out
 					statements = append(statements, Id(id).Index().String().Tag(map[string]string{"json": key}))
 				}
 			case *schema.Resource:
-				statements = append(statements, Id(id).Index().Id(structName).Tag(map[string]string{"json": key}))
-				TerraformSchemaToStruct(value.Elem.(*schema.Resource).Schema, structName+id, out)
+				statements = append(statements, Id(id).Index().Id(structName+id).Tag(map[string]string{"json": key}))
+				TerraformSchemaToStruct(value.Elem.(*schema.Resource).Schema, structName+id, providerName, out)
 			default:
 				statements = append(statements, Id(id).Index().String().Tag(map[string]string{"json": key}))
 			}
