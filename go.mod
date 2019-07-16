@@ -12,7 +12,6 @@ require (
 	github.com/google/gofuzz v1.0.0 // indirect
 	github.com/hashicorp/terraform v0.12.2
 	github.com/mattn/go-colorable v0.1.2 // indirect
-	github.com/sirupsen/logrus v1.2.0 // indirect
 	github.com/spf13/afero v1.2.2 // indirect
 	github.com/terraform-providers/terraform-provider-aws v0.0.0-20190711201143-6a59557e3feb
 	github.com/terraform-providers/terraform-provider-azurerm v1.31.1-0.20190715192829-94907ca9c29d
@@ -31,6 +30,9 @@ require (
 
 replace (
 	github.com/hashicorp/go-azure-helpers => github.com/hashicorp/go-azure-helpers v0.5.0
+	github.com/hashicorp/hcl => github.com/hashicorp/hcl v0.0.0-20170504190234-a4b07c25de5f
+	github.com/hashicorp/terraform => github.com/kubeform/terraform v0.12.5-0.20190716172124-00cfb5dc0935
+	github.com/ugorji/go => github.com/ugorji/go v0.0.0-20171019201919-bdcc60b419d1
 	k8s.io/api => k8s.io/api v0.0.0-20190313235455-40a48860b5ab
 	k8s.io/apiextensions-apiserver => k8s.io/apiextensions-apiserver v0.0.0-20190315093550-53c4693659ed
 	k8s.io/apimachinery => github.com/kmodules/apimachinery v0.0.0-20190508045248-a52a97a7a2bf
